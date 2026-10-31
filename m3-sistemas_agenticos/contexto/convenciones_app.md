@@ -45,3 +45,4 @@ Todo elemento que una prueba necesite tocar lleva `data-testid` con estos nombre
 - Si `app/` ya tiene código de historias anteriores, extiéndelo sin romperlo.
 - No agregues autenticación ni dependencias que no estén en esta lista sin justificarlo.
 - Al terminar: `GET /api/salud` responde y `npm run build` termina sin errores.
+- En rutas y data-testid, {id} es siempre el campo id numérico del empleado, nunca numero_empleado (EMP-xxxx).
