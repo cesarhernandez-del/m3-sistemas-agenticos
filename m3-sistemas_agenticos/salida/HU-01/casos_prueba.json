@@ -3,339 +3,269 @@
   "casos": [
     {
       "id": "CP-01",
-      "escenario": "Registro exitoso de un empleado",
+      "escenario": "Registro exitoso de un empleado con datos válidos",
       "nivel": "api",
       "precondiciones": [
-        "No existe ningún empleado con correo 'ana.lopez@empresa.com'"
+        "No existe ningún empleado con el correo ana.perez@empresa.com"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con nombre 'Ana López', correo 'Ana.Lopez@Empresa.com', puesto 'Analista de Sistemas', departamento 'Tecnología' y fecha_ingreso '2024-01-15'",
-        "Verificar el código de respuesta",
-        "Verificar el número de empleado asignado",
-        "Verificar el correo guardado",
-        "Verificar el estado del empleado"
+        "Enviar POST /api/empleados con body {nombre: 'Ana Pérez', correo: 'Ana.Perez@empresa.com', puesto: 'Analista de Nómina', departamento: 'Recursos Humanos', fecha_ingreso: '2024-03-01'}"
       ],
       "datos": {
-        "nombre": "Ana López",
-        "correo": "Ana.Lopez@Empresa.com",
-        "puesto": "Analista de Sistemas",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-01-15"
+        "nombre": "Ana Pérez",
+        "correo": "Ana.Perez@empresa.com",
+        "puesto": "Analista de Nómina",
+        "departamento": "Recursos Humanos",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 201, el empleado queda registrado con número de empleado 'EMP-0001', el correo guardado es 'ana.lopez@empresa.com' y el estado es 'activo'"
+      "resultado_esperado": "Respuesta 201; el empleado queda registrado con numero_empleado EMP-0001, correo guardado ana.perez@empresa.com y estado activo"
     },
     {
       "id": "CP-02",
-      "escenario": "Registro exitoso de un empleado",
+      "escenario": "Registro exitoso de un empleado con datos válidos",
       "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'ana.lopez@empresa.com'"
+        "No existe ningún empleado con el correo ana.perez@empresa.com",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Completar el campo data-testid='empleado-nombre' con 'Ana López'",
-        "Completar el campo data-testid='empleado-correo' con 'Ana.Lopez@Empresa.com'",
-        "Completar el campo data-testid='empleado-puesto' con 'Analista de Sistemas'",
-        "Seleccionar data-testid='empleado-departamento' con 'Tecnología'",
-        "Completar data-testid='empleado-fecha-ingreso' con '2024-01-15'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-exito'"
+        "Escribir 'Ana Pérez' en el campo data-testid=empleado-nombre",
+        "Escribir 'Ana.Perez@empresa.com' en el campo data-testid=empleado-correo",
+        "Escribir 'Analista de Nómina' en el campo data-testid=empleado-puesto",
+        "Seleccionar 'Recursos Humanos' en data-testid=empleado-departamento",
+        "Escribir '2024-03-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "Ana López",
-        "correo": "Ana.Lopez@Empresa.com",
-        "puesto": "Analista de Sistemas",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-01-15"
+        "nombre": "Ana Pérez",
+        "correo": "Ana.Perez@empresa.com",
+        "puesto": "Analista de Nómina",
+        "departamento": "Recursos Humanos",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El elemento data-testid='mensaje-exito' muestra un mensaje de confirmación que incluye el número de empleado 'EMP-0001'"
+      "resultado_esperado": "Se muestra data-testid=mensaje-exito con el texto 'Empleado EMP-0001 registrado con éxito'"
     },
     {
       "id": "CP-03",
-      "escenario": "No se puede registrar un empleado con un correo ya existente",
+      "escenario": "Rechazar registro con correo ya existente (sin importar mayúsculas)",
       "nivel": "api",
       "precondiciones": [
-        "Existe un empleado registrado con correo 'carlos.ruiz@empresa.com'"
+        "Ya existe un empleado registrado con el correo ana.perez@empresa.com"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'CARLOS.RUIZ@EMPRESA.COM', nombre 'Laura Díaz', puesto 'Contador', departamento 'Finanzas' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta",
-        "Verificar el mensaje de error"
+        "Enviar POST /api/empleados con body {nombre: 'Ana P. Gómez', correo: 'ANA.PEREZ@empresa.com', puesto: 'Reclutadora', departamento: 'Recursos Humanos', fecha_ingreso: '2024-03-01'}"
       ],
       "datos": {
-        "nombre": "Laura Díaz",
-        "correo": "CARLOS.RUIZ@EMPRESA.COM",
-        "puesto": "Contador",
-        "departamento": "Finanzas",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "Ana P. Gómez",
+        "correo": "ANA.PEREZ@empresa.com",
+        "puesto": "Reclutadora",
+        "departamento": "Recursos Humanos",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 409 y detail 'El correo ya está registrado'"
+      "resultado_esperado": "Respuesta 409 con detail indicando correo duplicado; no se crea un nuevo empleado"
     },
     {
       "id": "CP-04",
-      "escenario": "No se puede registrar un empleado con un correo que no es corporativo",
-      "nivel": "api",
+      "escenario": "Rechazar registro con correo ya existente (sin importar mayúsculas)",
+      "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'laura.perez@gmail.com'"
+        "Ya existe un empleado registrado con el correo ana.perez@empresa.com",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'laura.perez@gmail.com', nombre 'Laura Pérez', puesto 'Vendedor', departamento 'Ventas' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta",
-        "Verificar el mensaje de error"
+        "Escribir 'Ana P. Gómez' en data-testid=empleado-nombre",
+        "Escribir 'ANA.PEREZ@empresa.com' en data-testid=empleado-correo",
+        "Escribir 'Reclutadora' en data-testid=empleado-puesto",
+        "Seleccionar 'Recursos Humanos' en data-testid=empleado-departamento",
+        "Escribir '2024-03-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "Laura Pérez",
-        "correo": "laura.perez@gmail.com",
-        "puesto": "Vendedor",
-        "departamento": "Ventas",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "Ana P. Gómez",
+        "correo": "ANA.PEREZ@empresa.com",
+        "puesto": "Reclutadora",
+        "departamento": "Recursos Humanos",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 422 y detail 'Usa el correo corporativo @empresa.com'"
+      "resultado_esperado": "Se muestra data-testid=mensaje-error con el texto 'El correo ya está registrado' y no se crea un nuevo empleado"
     },
     {
       "id": "CP-05",
-      "escenario": "No se puede registrar un empleado con fecha de ingreso futura",
+      "escenario": "Rechazar registro con correo que no es corporativo",
       "nivel": "api",
       "precondiciones": [
-        "No existe ningún empleado con correo 'mario.soto@empresa.com'"
+        "No existe ningún empleado con el correo carlos.ruiz@gmail.com"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'mario.soto@empresa.com', nombre 'Mario Soto', puesto 'Técnico', departamento 'Operaciones' y fecha_ingreso '2999-01-01'",
-        "Verificar el código de respuesta",
-        "Verificar el mensaje de error"
+        "Enviar POST /api/empleados con body {nombre: 'Carlos Ruiz', correo: 'carlos.ruiz@gmail.com', puesto: 'Desarrollador', departamento: 'Tecnología', fecha_ingreso: '2024-03-01'}"
       ],
       "datos": {
-        "nombre": "Mario Soto",
-        "correo": "mario.soto@empresa.com",
-        "puesto": "Técnico",
-        "departamento": "Operaciones",
-        "fecha_ingreso": "2999-01-01"
+        "nombre": "Carlos Ruiz",
+        "correo": "carlos.ruiz@gmail.com",
+        "puesto": "Desarrollador",
+        "departamento": "Tecnología",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 422 y detail 'La fecha de ingreso no puede ser futura'"
+      "resultado_esperado": "Respuesta 422 con detail indicando que el correo debe ser corporativo; no se crea un nuevo empleado"
     },
     {
       "id": "CP-06",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "api",
+      "escenario": "Rechazar registro con correo que no es corporativo",
+      "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'pedro.gil@empresa.com'"
+        "No existe ningún empleado con el correo carlos.ruiz@gmail.com",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'pedro.gil@empresa.com', nombre 'A', puesto 'Analista', departamento 'Tecnología' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta"
+        "Escribir 'Carlos Ruiz' en data-testid=empleado-nombre",
+        "Escribir 'carlos.ruiz@gmail.com' en data-testid=empleado-correo",
+        "Escribir 'Desarrollador' en data-testid=empleado-puesto",
+        "Seleccionar 'Tecnología' en data-testid=empleado-departamento",
+        "Escribir '2024-03-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "A",
-        "correo": "pedro.gil@empresa.com",
-        "puesto": "Analista",
+        "nombre": "Carlos Ruiz",
+        "correo": "carlos.ruiz@gmail.com",
+        "puesto": "Desarrollador",
         "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 422 indicando que el campo 'nombre' es inválido"
+      "resultado_esperado": "Se muestra data-testid=mensaje-error con el texto 'Usa el correo corporativo @empresa.com' y no se crea un nuevo empleado"
     },
     {
       "id": "CP-07",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "e2e",
+      "escenario": "Rechazar registro con fecha de ingreso futura",
+      "nivel": "api",
       "precondiciones": [
-        "No existe ningún empleado con correo 'pedro.gil@empresa.com'"
+        "La fecha actual del sistema es 2024-05-10"
       ],
       "pasos": [
-        "Completar data-testid='empleado-nombre' con 'A'",
-        "Completar data-testid='empleado-correo' con 'pedro.gil@empresa.com'",
-        "Completar data-testid='empleado-puesto' con 'Analista'",
-        "Seleccionar data-testid='empleado-departamento' con 'Tecnología'",
-        "Completar data-testid='empleado-fecha-ingreso' con '2024-02-01'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-error'"
+        "Enviar POST /api/empleados con body {nombre: 'Laura Díaz', correo: 'laura.diaz@empresa.com', puesto: 'Contadora', departamento: 'Finanzas', fecha_ingreso: '2024-06-01'}"
       ],
       "datos": {
-        "nombre": "A",
-        "correo": "pedro.gil@empresa.com",
-        "puesto": "Analista",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "Laura Díaz",
+        "correo": "laura.diaz@empresa.com",
+        "puesto": "Contadora",
+        "departamento": "Finanzas",
+        "fecha_ingreso": "2024-06-01",
+        "fecha_actual_sistema": "2024-05-10"
       },
-      "resultado_esperado": "La pantalla indica mediante data-testid='mensaje-error' que el campo 'nombre' debe corregirse"
+      "resultado_esperado": "Respuesta 422 con detail indicando que la fecha de ingreso no puede ser futura; no se crea un nuevo empleado"
     },
     {
       "id": "CP-08",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "api",
+      "escenario": "Rechazar registro con fecha de ingreso futura",
+      "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'sara.cruz@empresa.com'"
+        "La fecha actual del sistema es 2024-05-10",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'sara.cruz@empresa.com', nombre '', puesto 'Analista', departamento 'Tecnología' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta"
+        "Escribir 'Laura Díaz' en data-testid=empleado-nombre",
+        "Escribir 'laura.diaz@empresa.com' en data-testid=empleado-correo",
+        "Escribir 'Contadora' en data-testid=empleado-puesto",
+        "Seleccionar 'Finanzas' en data-testid=empleado-departamento",
+        "Escribir '2024-06-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "",
-        "correo": "sara.cruz@empresa.com",
-        "puesto": "Analista",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "Laura Díaz",
+        "correo": "laura.diaz@empresa.com",
+        "puesto": "Contadora",
+        "departamento": "Finanzas",
+        "fecha_ingreso": "2024-06-01",
+        "fecha_actual_sistema": "2024-05-10"
       },
-      "resultado_esperado": "El sistema responde con código 422 indicando que el campo 'nombre' es inválido"
+      "resultado_esperado": "Se muestra data-testid=mensaje-error con el texto 'La fecha de ingreso no puede ser futura' y no se crea un nuevo empleado"
     },
     {
       "id": "CP-09",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "e2e",
+      "escenario": "Rechazar registro con nombre fuera del rango permitido",
+      "nivel": "api",
       "precondiciones": [
-        "No existe ningún empleado con correo 'sara.cruz@empresa.com'"
+        "No existe ningún empleado con el correo jo@empresa.com"
       ],
       "pasos": [
-        "Dejar vacío data-testid='empleado-nombre'",
-        "Completar data-testid='empleado-correo' con 'sara.cruz@empresa.com'",
-        "Completar data-testid='empleado-puesto' con 'Analista'",
-        "Seleccionar data-testid='empleado-departamento' con 'Tecnología'",
-        "Completar data-testid='empleado-fecha-ingreso' con '2024-02-01'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-error'"
+        "Enviar POST /api/empleados con body {nombre: 'J', correo: 'jo@empresa.com', puesto: 'Auxiliar', departamento: 'Operaciones', fecha_ingreso: '2024-03-01'}"
       ],
       "datos": {
-        "nombre": "",
-        "correo": "sara.cruz@empresa.com",
-        "puesto": "Analista",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "J",
+        "correo": "jo@empresa.com",
+        "puesto": "Auxiliar",
+        "departamento": "Operaciones",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "La pantalla indica mediante data-testid='mensaje-error' que el campo 'nombre' debe corregirse"
+      "resultado_esperado": "Respuesta 422 con detail indicando que el campo nombre es inválido; no se crea un nuevo empleado"
     },
     {
       "id": "CP-10",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "api",
+      "escenario": "Rechazar registro con nombre fuera del rango permitido",
+      "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'ivan.leon@empresa.com'"
+        "No existe ningún empleado con el correo jo@empresa.com",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Enviar POST /api/empleados con correo 'ivan.leon@empresa.com', nombre 'Iván León', puesto 'B', departamento 'Tecnología' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta"
+        "Escribir 'J' en data-testid=empleado-nombre",
+        "Escribir 'jo@empresa.com' en data-testid=empleado-correo",
+        "Escribir 'Auxiliar' en data-testid=empleado-puesto",
+        "Seleccionar 'Operaciones' en data-testid=empleado-departamento",
+        "Escribir '2024-03-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "Iván León",
-        "correo": "ivan.leon@empresa.com",
-        "puesto": "B",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "J",
+        "correo": "jo@empresa.com",
+        "puesto": "Auxiliar",
+        "departamento": "Operaciones",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 422 indicando que el campo 'puesto' es inválido"
+      "resultado_esperado": "Se muestra data-testid=mensaje-error indicando que el campo nombre debe corregirse y no se crea un nuevo empleado"
     },
     {
       "id": "CP-11",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "e2e",
+      "escenario": "Rechazar registro con departamento no permitido",
+      "nivel": "api",
       "precondiciones": [
-        "No existe ningún empleado con correo 'ivan.leon@empresa.com'"
+        "No existe ningún empleado con el correo mario.leon@empresa.com"
       ],
       "pasos": [
-        "Completar data-testid='empleado-nombre' con 'Iván León'",
-        "Completar data-testid='empleado-correo' con 'ivan.leon@empresa.com'",
-        "Completar data-testid='empleado-puesto' con 'B'",
-        "Seleccionar data-testid='empleado-departamento' con 'Tecnología'",
-        "Completar data-testid='empleado-fecha-ingreso' con '2024-02-01'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-error'"
+        "Enviar POST /api/empleados con body {nombre: 'Mario León', correo: 'mario.leon@empresa.com', puesto: 'Supervisor', departamento: 'Logística', fecha_ingreso: '2024-03-01'}"
       ],
       "datos": {
-        "nombre": "Iván León",
-        "correo": "ivan.leon@empresa.com",
-        "puesto": "B",
-        "departamento": "Tecnología",
-        "fecha_ingreso": "2024-02-01"
+        "nombre": "Mario León",
+        "correo": "mario.leon@empresa.com",
+        "puesto": "Supervisor",
+        "departamento": "Logística",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "La pantalla indica mediante data-testid='mensaje-error' que el campo 'puesto' debe corregirse"
+      "resultado_esperado": "Respuesta 422 con detail indicando que el campo departamento es inválido; no se crea un nuevo empleado"
     },
     {
       "id": "CP-12",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "api",
-      "precondiciones": [
-        "No existe ningún empleado con correo 'eva.ponce@empresa.com'"
-      ],
-      "pasos": [
-        "Enviar POST /api/empleados con correo 'eva.ponce@empresa.com', nombre 'Eva Ponce', puesto 'Diseñador', departamento 'Marketing' y fecha_ingreso '2024-02-01'",
-        "Verificar el código de respuesta"
-      ],
-      "datos": {
-        "nombre": "Eva Ponce",
-        "correo": "eva.ponce@empresa.com",
-        "puesto": "Diseñador",
-        "departamento": "Marketing",
-        "fecha_ingreso": "2024-02-01"
-      },
-      "resultado_esperado": "El sistema responde con código 422 indicando que el campo 'departamento' es inválido"
-    },
-    {
-      "id": "CP-13",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
+      "escenario": "Rechazar registro con departamento no permitido",
       "nivel": "e2e",
       "precondiciones": [
-        "No existe ningún empleado con correo 'eva.ponce@empresa.com'"
+        "No existe ningún empleado con el correo mario.leon@empresa.com",
+        "El usuario está en la pantalla de registro de empleados"
       ],
       "pasos": [
-        "Completar data-testid='empleado-nombre' con 'Eva Ponce'",
-        "Completar data-testid='empleado-correo' con 'eva.ponce@empresa.com'",
-        "Completar data-testid='empleado-puesto' con 'Diseñador'",
-        "Seleccionar data-testid='empleado-departamento' con 'Marketing'",
-        "Completar data-testid='empleado-fecha-ingreso' con '2024-02-01'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-error'"
+        "Escribir 'Mario León' en data-testid=empleado-nombre",
+        "Escribir 'mario.leon@empresa.com' en data-testid=empleado-correo",
+        "Escribir 'Supervisor' en data-testid=empleado-puesto",
+        "Seleccionar 'Logística' en data-testid=empleado-departamento",
+        "Escribir '2024-03-01' en data-testid=empleado-fecha-ingreso",
+        "Hacer clic en data-testid=empleado-guardar"
       ],
       "datos": {
-        "nombre": "Eva Ponce",
-        "correo": "eva.ponce@empresa.com",
-        "puesto": "Diseñador",
-        "departamento": "Marketing",
-        "fecha_ingreso": "2024-02-01"
-      },
-      "resultado_esperado": "La pantalla indica mediante data-testid='mensaje-error' que el campo 'departamento' debe corregirse"
-    },
-    {
-      "id": "CP-14",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "api",
-      "precondiciones": [
-        "No existe ningún empleado con correo 'noe.ramos@empresa.com'"
-      ],
-      "pasos": [
-        "Enviar POST /api/empleados con correo 'noe.ramos@empresa.com', nombre 'Noé Ramos', puesto 'Supervisor', departamento 'Operaciones' y fecha_ingreso ''",
-        "Verificar el código de respuesta"
-      ],
-      "datos": {
-        "nombre": "Noé Ramos",
-        "correo": "noe.ramos@empresa.com",
+        "nombre": "Mario León",
+        "correo": "mario.leon@empresa.com",
         "puesto": "Supervisor",
-        "departamento": "Operaciones",
-        "fecha_ingreso": ""
+        "departamento": "Logística",
+        "fecha_ingreso": "2024-03-01"
       },
-      "resultado_esperado": "El sistema responde con código 422 indicando que el campo 'fecha_ingreso' es inválido"
-    },
-    {
-      "id": "CP-15",
-      "escenario": "No se puede registrar un empleado con datos obligatorios inválidos",
-      "nivel": "e2e",
-      "precondiciones": [
-        "No existe ningún empleado con correo 'noe.ramos@empresa.com'"
-      ],
-      "pasos": [
-        "Completar data-testid='empleado-nombre' con 'Noé Ramos'",
-        "Completar data-testid='empleado-correo' con 'noe.ramos@empresa.com'",
-        "Completar data-testid='empleado-puesto' con 'Supervisor'",
-        "Seleccionar data-testid='empleado-departamento' con 'Operaciones'",
-        "Dejar vacío data-testid='empleado-fecha-ingreso'",
-        "Hacer clic en data-testid='empleado-guardar'",
-        "Verificar el contenido de data-testid='mensaje-error'"
-      ],
-      "datos": {
-        "nombre": "Noé Ramos",
-        "correo": "noe.ramos@empresa.com",
-        "puesto": "Supervisor",
-        "departamento": "Operaciones",
-        "fecha_ingreso": ""
-      },
-      "resultado_esperado": "La pantalla indica mediante data-testid='mensaje-error' que el campo 'fecha_ingreso' debe corregirse"
+      "resultado_esperado": "Se muestra data-testid=mensaje-error indicando que el campo departamento debe corregirse y no se crea un nuevo empleado"
     }
   ]
 }

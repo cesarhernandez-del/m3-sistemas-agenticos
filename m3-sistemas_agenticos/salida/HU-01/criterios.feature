@@ -1,54 +1,55 @@
 # language: es
-
 Característica: Registrar empleado
   Como persona del área de Recursos Humanos
-  Quiero registrar a un empleado con su nombre, correo corporativo, puesto, departamento y fecha de ingreso
-  Para darlo de alta en la empresa
+  quiero registrar a un empleado con su nombre, correo corporativo, puesto, departamento y fecha de ingreso
+  para darlo de alta en la empresa
 
-  Escenario: Registro exitoso de un empleado
-    Dado que no existe ningún empleado con correo "ana.lopez@empresa.com"
-    Cuando registro un empleado con los siguientes datos:
-      | nombre     | correo                  | puesto                | departamento | fecha_ingreso |
-      | Ana López  | Ana.Lopez@Empresa.com   | Analista de Sistemas  | Tecnología   | 2024-01-15    |
-    Entonces el sistema responde con código 201
-    Y el empleado queda registrado con número de empleado "EMP-0001"
-    Y el correo guardado del empleado es "ana.lopez@empresa.com"
+  Escenario: Registro exitoso de un empleado con datos válidos
+    Dado que no existe ningún empleado con el correo "ana.perez@empresa.com"
+    Cuando registro un empleado con nombre "Ana Pérez", correo "Ana.Perez@empresa.com", puesto "Analista de Nómina", departamento "Recursos Humanos" y fecha de ingreso "2024-03-01"
+    Entonces el sistema responde con estado 201
+    Y el empleado queda registrado con numero_empleado "EMP-0001"
+    Y el correo guardado es "ana.perez@empresa.com"
     Y el estado del empleado es "activo"
-    Y la pantalla muestra un mensaje de confirmación que incluye el número de empleado "EMP-0001"
+    Y la pantalla muestra el mensaje "Empleado EMP-0001 registrado con éxito"
 
-  Escenario: No se puede registrar un empleado con un correo ya existente
-    Dado que existe un empleado registrado con correo "carlos.ruiz@empresa.com"
-    Cuando intento registrar un empleado con correo "CARLOS.RUIZ@EMPRESA.COM", nombre "Laura Díaz", puesto "Contador", departamento "Finanzas" y fecha_ingreso "2024-02-01"
-    Entonces el sistema responde con código 409
-    Y el mensaje es "El correo ya está registrado"
+  Escenario: Rechazar registro con correo ya existente (sin importar mayúsculas)
+    Dado que ya existe un empleado registrado con el correo "ana.perez@empresa.com"
+    Cuando registro un empleado con nombre "Ana P. Gómez", correo "ANA.PEREZ@empresa.com", puesto "Reclutadora", departamento "Recursos Humanos" y fecha de ingreso "2024-03-01"
+    Entonces el sistema responde con estado 409
+    Y la pantalla muestra el mensaje "El correo ya está registrado"
+    Y no se crea un nuevo empleado
 
-  Escenario: No se puede registrar un empleado con un correo que no es corporativo
-    Dado que no existe ningún empleado con correo "laura.perez@gmail.com"
-    Cuando intento registrar un empleado con correo "laura.perez@gmail.com", nombre "Laura Pérez", puesto "Vendedor", departamento "Ventas" y fecha_ingreso "2024-02-01"
-    Entonces el sistema responde con código 422
-    Y el mensaje es "Usa el correo corporativo @empresa.com"
+  Escenario: Rechazar registro con correo que no es corporativo
+    Dado que no existe ningún empleado con el correo "carlos.ruiz@gmail.com"
+    Cuando registro un empleado con nombre "Carlos Ruiz", correo "carlos.ruiz@gmail.com", puesto "Desarrollador", departamento "Tecnología" y fecha de ingreso "2024-03-01"
+    Entonces el sistema responde con estado 422
+    Y la pantalla muestra el mensaje "Usa el correo corporativo @empresa.com"
+    Y no se crea un nuevo empleado
 
-  Escenario: No se puede registrar un empleado con fecha de ingreso futura
-    Dado que no existe ningún empleado con correo "mario.soto@empresa.com"
-    Cuando intento registrar un empleado con correo "mario.soto@empresa.com", nombre "Mario Soto", puesto "Técnico", departamento "Operaciones" y fecha_ingreso "2999-01-01"
-    Entonces el sistema responde con código 422
-    Y el mensaje es "La fecha de ingreso no puede ser futura"
+  Escenario: Rechazar registro con fecha de ingreso futura
+    Dado que la fecha actual del sistema es "2024-05-10"
+    Cuando registro un empleado con nombre "Laura Díaz", correo "laura.diaz@empresa.com", puesto "Contadora", departamento "Finanzas" y fecha de ingreso "2024-06-01"
+    Entonces el sistema responde con estado 422
+    Y la pantalla muestra el mensaje "La fecha de ingreso no puede ser futura"
+    Y no se crea un nuevo empleado
 
-  Esquema del escenario: No se puede registrar un empleado con datos obligatorios inválidos
-    Dado que no existe ningún empleado con correo "<correo>"
-    Cuando intento registrar un empleado con correo "<correo>", nombre "<nombre>", puesto "<puesto>", departamento "<departamento>" y fecha_ingreso "<fecha_ingreso>"
-    Entonces el sistema responde con código 422
-    Y la pantalla indica que el campo "<campo_invalido>" debe corregirse
+  Escenario: Rechazar registro con nombre fuera del rango permitido
+    Dado que no existe ningún empleado con el correo "jo@empresa.com"
+    Cuando registro un empleado con nombre "J", correo "jo@empresa.com", puesto "Auxiliar", departamento "Operaciones" y fecha de ingreso "2024-03-01"
+    Entonces el sistema responde con estado 422
+    Y la pantalla indica que el campo "nombre" debe corregirse
+    Y no se crea un nuevo empleado
 
-    Ejemplos:
-      | correo                  | nombre       | puesto     | departamento | fecha_ingreso | campo_invalido |
-      | pedro.gil@empresa.com   | A            | Analista   | Tecnología   | 2024-02-01    | nombre         |
-      | sara.cruz@empresa.com   |              | Analista   | Tecnología   | 2024-02-01    | nombre         |
-      | ivan.leon@empresa.com   | Iván León    | B          | Tecnología   | 2024-02-01    | puesto         |
-      | eva.ponce@empresa.com   | Eva Ponce    | Diseñador  | Marketing    | 2024-02-01    | departamento   |
-      | noe.ramos@empresa.com   | Noé Ramos    | Supervisor | Operaciones  |                | fecha_ingreso  |
+  Escenario: Rechazar registro con departamento no permitido
+    Dado que no existe ningún empleado con el correo "mario.leon@empresa.com"
+    Cuando registro un empleado con nombre "Mario León", correo "mario.leon@empresa.com", puesto "Supervisor", departamento "Logística" y fecha de ingreso "2024-03-01"
+    Entonces el sistema responde con estado 422
+    Y la pantalla indica que el campo "departamento" debe corregirse
+    Y no se crea un nuevo empleado
 
 # Preguntas abiertas
-# - ¿Cuál es el texto exacto del mensaje de confirmación tras registrar? La nota del PO solo indica que debe incluir el número asignado, pero no da la redacción literal.
-# - Para la regla "cualquier otro dato inválido responde 422 y la pantalla muestra qué campo corregir" (regla 3), ¿existe un mensaje exacto por campo (por ejemplo "El nombre debe tener entre 2 y 80 caracteres") o basta con señalar el nombre del campo?
-# - ¿El campo "nombre" y "puesto" tienen alguna restricción de formato (caracteres especiales, números) además del largo mínimo y máximo?
+# - No se especifica el mensaje exacto que debe mostrar la pantalla para errores genéricos de campo (regla 3);
+#   se usó una redacción genérica "indica que el campo X debe corregirse". Confirmar el texto exacto esperado.
+# - No se especifica si el límite de caracteres de "nombre" y "puesto" es inclusivo en los extremos (2 y 80 / 2 y 60);
+#   se asumió que esos valores sí son válidos y solo valores por debajo del mínimo son inválidos.
