@@ -3,7 +3,7 @@
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from basedatos import obtener_sesion
@@ -21,6 +21,29 @@ def salud() -> dict[str, str]:
 @router.get("/departamentos")
 def listar_departamentos() -> list[str]:
     return DEPARTAMENTOS_VALIDOS
+
+
+@router.get("/empleados", response_model=list[EmpleadoSalida])
+def listar_empleados(
+    buscar: str | None = None,
+    departamento: str | None = None,
+    sesion: Session = Depends(obtener_sesion),
+) -> list[Empleado]:
+    consulta = select(Empleado)
+
+    if buscar:
+        termino = f"%{buscar.lower()}%"
+        consulta = consulta.where(
+            or_(
+                func.lower(Empleado.nombre).like(termino),
+                func.lower(Empleado.correo).like(termino),
+            )
+        )
+
+    if departamento:
+        consulta = consulta.where(Empleado.departamento == departamento)
+
+    return list(sesion.scalars(consulta))
 
 
 @router.post("/empleados", response_model=EmpleadoSalida, status_code=201)

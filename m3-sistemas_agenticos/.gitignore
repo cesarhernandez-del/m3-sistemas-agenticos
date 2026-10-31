@@ -11,3 +11,4 @@ app/test-results/
 ejemplos/salidas/
 lab_agents
 .pytest_cache/
+.DS_Store

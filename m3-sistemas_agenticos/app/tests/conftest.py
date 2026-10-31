@@ -1,0 +1,20 @@
+"""Fixtures compartidas para las pruebas de la aplicación de empleados."""
+
+import os
+
+import pytest
+
+URL_API = os.environ.get("URL_API", "http://localhost:8000")
+URL_WEB = os.environ.get("URL_WEB", "http://localhost:8080")
+
+
+@pytest.fixture
+def url_api() -> str:
+    """URL base de la API (sin barra final)."""
+    return URL_API
+
+
+@pytest.fixture
+def url_web() -> str:
+    """URL base del front-end."""
+    return URL_WEB
