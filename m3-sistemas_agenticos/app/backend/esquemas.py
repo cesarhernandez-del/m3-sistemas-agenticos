@@ -39,6 +39,22 @@ class EmpleadoCrear(BaseModel):
         return valor
 
 
+class EmpleadoActualizar(BaseModel):
+    puesto: str | None = Field(default=None, min_length=2, max_length=60)
+    departamento: str | None = None
+
+    @field_validator("departamento")
+    @classmethod
+    def validar_departamento(cls, valor: str | None) -> str | None:
+        if valor is not None and valor not in DEPARTAMENTOS_VALIDOS:
+            raise ValueError("departamento no es válido")
+        return valor
+
+
+class EmpleadoBaja(BaseModel):
+    fecha_baja: date
+
+
 class EmpleadoSalida(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

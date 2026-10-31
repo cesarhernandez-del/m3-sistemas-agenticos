@@ -1,0 +1,278 @@
+Analista · intento 1
+
+--- PREGUNTAS ---
+['¿Qué debe pasar si una solicitud de edición incluye un nuevo valor para "correo" o "numero_empleado"?', '¿Se ignora el cambio silenciosamente o la API responde con un error (y con qué código y mensaje)?', 'Para los datos inválidos cubiertos por la regla general "Cualquier otro dato inválido responde 422"', '(departamento fuera de catálogo, puesto corto, fecha_baja anterior a fecha_ingreso), no hay un', 'mensaje exacto definido en las reglas de negocio; se usó una redacción genérica ("la pantalla', 'indica que el campo X debe corregirse"). Confirmar el texto exacto esperado en cada caso.']
+Hay preguntas abiertas. ¿Continuar de todos modos? (si/no): ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Diseñador de pruebas · intento 1
+  [desarrollador-plan] trabajando en app/ con Claude Code...
+  [desarrollador-plan] terminó en 10 turnos · 0.19 USD
+
+--- PLAN ---
+## Plan HU-03: Editar y dar de baja a un empleado
+
+**Hallazgo clave:** los casos de prueba y `convenciones_app.md` identifican filas/acciones con `numero_empleado` (p. ej. `fila-empleado-EMP-0007`), pero `DirectorioEmpleados.jsx` hoy usa `empleado.id` en esos `data-testid`. Hay que migrar esos testid de `id` a `numero_empleado` para que HU-03 (y las pruebas) funcionen; esto toca código de HU-01, así que lo trato como corrección, no como feature nueva.
+
+### 1. Modelo de datos (`modelos.py`, `esquemas.py`)
+- Sin cambios en `Empleado` (ya tiene `estado` y `fecha_baja`).
+- Nuevo `EmpleadoEditar` (Pydantic): `puesto`, `departamento` opcionales/parciales — **no** incluye `correo` ni `numero_empleado` (regla 6/pregunta abierta: se ignoran si llegan, no se valida su ausencia).
+- Nuevo `EmpleadoBaja`: `fecha_baja: date`.
+- Reutilizar `validar_departamento` y los límites de `puesto` vía validadores compartidos.
+
+### 2. Endpoints (`rutas_empleados.py`)
+- `GET /api/empleados/{numero_empleado}`: 404 si no existe (necesario para refrescar la fila tras editar/dar de baja).
+- `PUT /api/empleados/{numero_empleado}`: valida catálogo/puesto (422), bloquea si `estado == "baja"` (409, mensaje exacto de la regla 6), ignora `correo`/`numero_empleado` si vienen en el body.
+- `POST /api/empleados/{numero_empleado}/baja`: valida `fecha_baja >= fecha_ingreso` (422), setea `estado="baja"` y `fecha_baja`; 409 si ya estaba de baja (evita doble baja, no cubierto explícitamente pero consistente con regla 6).
+- Buscar por `numero_empleado` en vez de `id` como clave de ruta en los tres.
+
+### 3. Frontend
+- **Migrar testid** de `fila-empleado-${id}`, `numero-empleado-${id}`, `estado-empleado-${id}` a `${numero_empleado}` en `DirectorioEmpleados.jsx`.
+- Agregar columna de acciones con `editar-empleado-{numero_empleado}` y `baja-empleado-{numero_empleado}`.
+- Nuevo componente `ModalEditarEmpleado` (o inline): reusa inputs `empleado-puesto`/`empleado-departamento`, botón `empleado-guardar`, muestra `mensaje-exito`/`mensaje-error`.
+- Nuevo componente `ModalBajaEmpleado`: campo `empleado-fecha-baja`, botón `confirmar-baja`.
+- Tras guardar/dar de baja: refrescar la fila en `DirectorioEmpleados` (refetch o actualización local) sin desaparecer de la tabla.
+
+¿Apruebo este plan antes de tocar código?
+¿Aprobar el plan? Escribe 'si' o tus comentarios: ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  [desarrollador-plan] trabajando en app/ con Claude Code...
+  [desarrollador-plan] terminó en 9 turnos · 0.12 USD
+
+--- PLAN ---
+## Plan de implementación — HU-03 (editar y dar de baja)
+
+**Correcciones aplicadas:** uso `{id}` (numérico, el mismo que ya identifica `fila-empleado-{id}`), no `numero_empleado`. No toco altas ni directorio de HU-01/HU-02.
+
+### 1. Esquemas (`backend/esquemas.py`)
+- `EmpleadoActualizar`: `puesto` y `departamento` opcionales, misma validación de longitud/catálogo que `EmpleadoCrear`. No incluye `correo` ni `numero_empleado` → si llegan en el body, se ignoran (Pydantic solo lee los campos declarados).
+- `EmpleadoBaja`: `fecha_baja: date` obligatoria.
+
+### 2. Modelo (`backend/modelos.py`)
+- Sin cambios: ya tiene `estado` y `fecha_baja`.
+
+### 3. Rutas nuevas (`backend/rutas_empleados.py`)
+- `GET /api/empleados/{id}`: 404 si no existe.
+- `PUT /api/empleados/{id}`:
+  - 404 si no existe.
+  - 409 "No se puede editar a un empleado dado de baja" si `estado == "baja"`.
+  - 422 si `departamento` no está en catálogo o `puesto` fuera de rango (Pydantic lo cubre; se traduce a mensaje con el nombre del campo).
+  - Actualiza solo `puesto`/`departamento`; `numero_empleado` y `correo` permanecen intactos.
+- `POST /api/empleados/{id}/baja`:
+  - 404 si no existe.
+  - 422 "La fecha de baja no puede ser anterior a la fecha de ingreso" si `fecha_baja < fecha_ingreso`.
+  - Pone `estado="baja"` y guarda `fecha_baja`.
+
+### 4. Frontend
+- `DirectorioEmpleados.jsx`: agregar columna de acciones con botones `editar-empleado-{id}` y `baja-empleado-{id}` por fila (reutilizando `empleado.id`); no se toca el resto de la tabla/búsqueda/filtro.
+- Nuevo componente `EditarEmpleado.jsx`: formulario con `empleado-puesto`, `empleado-departamento` (reutiliza catálogo de `/api/departamentos`) y botón `empleado-guardar`; llama `PUT /api/empleados/{id}`; muestra `mensaje-exito`/`mensaje-error`.
+- Nuevo componente `BajaEmpleado.jsx`: campo `empleado-fecha-baja` y botón `confirmar-baja`; llama `POST /api/empleados/{id}/baja`; muestra `mensaje-exito`/`mensaje-error`.
+- `App.jsx`: enrutar/mostrar estos componentes (modal o vista aparte) sin alterar el flujo de alta existente.
+
+### 5. Verificación
+- `GET /api/salud` responde y `npm run build` sin errores, como exige `convenciones_app.md`.
+
+¿Apruebas este plan para empezar a implementar?
+¿Aprobar el plan? Escribe 'si' o tus comentarios: ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  [desarrollador] trabajando en app/ con Claude Code...
+  [desarrollador] terminó en 26 turnos · 0.49 USD
+  [despliegue] trabajando en app/ con Claude Code...
+  [automatizador] trabajando en app/ con Claude Code...
+  [despliegue] terminó en 13 turnos · 0.12 USD
+  [automatizador] terminó en 20 turnos · 0.40 USD
+  [desarrollador] trabajando en app/ con Claude Code...
+  [desarrollador] terminó en 65 turnos · 1.70 USD
+  [automatizador] trabajando en app/ con Claude Code...
+  [automatizador] terminó en 26 turnos · 0.51 USD
+# Reporte · HU-03
+
+**Estado:** ESCALAR A UNA PERSONA
+**Costo de agentes:** 3.54 USD
+**Ciclos de corrección:** 2
+
+## Bitácora
+- Filtro de historia: OK
+- Criterios escritos en criterios.feature
+- Preguntas abiertas: la persona respondió 'si'
+- Casos de prueba escritos en casos_prueba.json
+- Plan rechazado: No migres los data-testid ni las rutas a numero_empleado. Según convenciones_app.md, {id} es el campo id numérico del recurso, el mismo que ya usan HU-02 y sus pruebas. Las rutas nuevas son GET /api/empleados/{id}, PUT /api/empleados/{id} y POST /api/empleados/{id}/baja, y los testid nuevos son editar-empleado-{id} y baja-empleado-{id} con el id numérico. No modifiques el alta ni el directorio de HU-01 y HU-02.
+- Plan aprobado por una persona
+- Construcción 1
+- Verificación: OK
+- Pruebas automatizadas: OK (12 casos)
+- Despliegue: OK
+- Despliegue y pruebas listos
+- Pruebas E2E: 7 failed, 17 passed, 3 warnings in 12.98s
+- Triage → desarrollador: Al dar de baja a un empleado, este desaparece del directorio en lugar de seguir apareciendo con estado "baja", incumpliendo el escenario "Dar de baja a un empleado activo" que exige que el empleado "sigue apareciendo en el directorio". Esto afecta tanto a la prueba de API (test_cp11) como a las E2E (test_cp06 con el correo generado y test_cp12).
+- Código corregido; redespliegue OK
+- Pruebas E2E: 10 failed, 14 passed, 3 warnings in 52.91s
+- Triage → automatizador: Las 10 pruebas fallan porque las filas de empleados esperadas (fila-empleado-88, 89, 94-100) nunca aparecen en el directorio; la aplicación sigue mostrando la pantalla de "Registrar empleado" sin haber navegado ni confirmado la creación/precondición de los empleados de prueba antes de buscarlos. Esto indica que los tests no esperan correctamente a que el empleado se registre (o no navegan a la vista de listado) antes de aserciones sobre las filas, usando selectores que apuntan a un estado de la UI que aún no se alcanzó.
+- Pruebas corregidas
+- Pruebas E2E: 10 failed, 14 passed, 3 warnings in 52.56s
+
+## Última ejecución de pruebas
+```
+10 failed, 14 passed, 3 warnings in 52.56s
+- tests.e2e.test_hu_02_e2e::test_cp04_buscar_por_nombre_sin_distinguir_mayusculas[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-120") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-120")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_02_e2e::test_cp06_buscar_por_correo_sin_distinguir_mayusculas[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-121") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-121")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_02_e2e::test_cp08_filtrar_por_departamento[chromium]
+  AssertionError: Locator expected to have count '2'
+Actual value: 0 
+Call log:
+  - Expect "to_have_count" locator("[data-testid^=\"fila-empleado-\"]") with timeout 5000ms
+  - waiting for locator("[data-testid^=\"fila-empleado-\"]")
+    14 × locator resolved to 0 elements
+       - unexpected value "0"
+- tests.e2e.test_hu_02_e2e::test_cp12_empleado_baja_sigue_en_directorio[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-126") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-126")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp02_editar_puesto_y_departamento_empleado_activo[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-127") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-127")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp04_error_editar_departamento_fuera_de_catalogo[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-128") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-128")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp06_error_editar_puesto_demasiado_corto[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-129") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-129")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp08_error_editar_empleado_dado_de_baja[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-130") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-130")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp10_dar_de_baja_empleado_activo[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-131") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-131")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+- tests.e2e.test_hu_03_e2e::test_cp12_error_dar_de_baja_fecha_anterior_a_ingreso[chromium]
+  AssertionError: Locator expected to be visible
+Actual value: None
+Error: element(s) not found 
+Call log:
+  - Expect "to_be_visible" get_by_test_id("fila-empleado-132") with timeout 5000ms
+  - waiting for get_by_test_id("fila-empleado-132")
+
+Aria snapshot:
+- heading "Registrar empleado" [level=1]
+- text: Nombre
+- textbox "Nombre"
+- text: Correo
+- textbox "Correo"
+- text: Puesto
+- textbox "Puesto"
+-
+```

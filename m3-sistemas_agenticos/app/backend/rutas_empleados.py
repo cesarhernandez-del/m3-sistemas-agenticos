@@ -7,7 +7,13 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from basedatos import obtener_sesion
-from esquemas import DEPARTAMENTOS_VALIDOS, EmpleadoCrear, EmpleadoSalida
+from esquemas import (
+    DEPARTAMENTOS_VALIDOS,
+    EmpleadoActualizar,
+    EmpleadoBaja,
+    EmpleadoCrear,
+    EmpleadoSalida,
+)
 from modelos import Empleado
 
 router = APIRouter(prefix="/api")
@@ -72,6 +78,59 @@ def crear_empleado(
         estado="activo",
     )
     sesion.add(empleado)
+    sesion.commit()
+    sesion.refresh(empleado)
+    return empleado
+
+
+@router.get("/empleados/{id}", response_model=EmpleadoSalida)
+def obtener_empleado(id: int, sesion: Session = Depends(obtener_sesion)) -> Empleado:
+    empleado = sesion.get(Empleado, id)
+    if empleado is None:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+    return empleado
+
+
+@router.put("/empleados/{id}", response_model=EmpleadoSalida)
+def editar_empleado(
+    id: int, datos: EmpleadoActualizar, sesion: Session = Depends(obtener_sesion)
+) -> Empleado:
+    empleado = sesion.get(Empleado, id)
+    if empleado is None:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+
+    if empleado.estado == "baja":
+        raise HTTPException(
+            status_code=409,
+            detail="No se puede editar a un empleado dado de baja",
+        )
+
+    if datos.puesto is not None:
+        empleado.puesto = datos.puesto
+    if datos.departamento is not None:
+        empleado.departamento = datos.departamento
+
+    sesion.commit()
+    sesion.refresh(empleado)
+    return empleado
+
+
+@router.post("/empleados/{id}/baja", response_model=EmpleadoSalida)
+def dar_de_baja_empleado(
+    id: int, datos: EmpleadoBaja, sesion: Session = Depends(obtener_sesion)
+) -> Empleado:
+    empleado = sesion.get(Empleado, id)
+    if empleado is None:
+        raise HTTPException(status_code=404, detail="Empleado no encontrado")
+
+    if datos.fecha_baja < empleado.fecha_ingreso:
+        raise HTTPException(
+            status_code=422, detail="El campo fecha_baja debe corregirse"
+        )
+
+    empleado.estado = "baja"
+    empleado.fecha_baja = datos.fecha_baja
+
     sesion.commit()
     sesion.refresh(empleado)
     return empleado
