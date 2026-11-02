@@ -5,16 +5,10 @@ incrustado en el nombre) y usa ese identificador en el buscador del
 directorio para aislar sus resultados del resto de los datos existentes.
 """
 
-import sqlite3
 import uuid
-from datetime import date, datetime
-from pathlib import Path
 
 import httpx
-import pytest
 from playwright.sync_api import Page, expect
-
-RUTA_BASE_DATOS = Path(__file__).resolve().parents[2] / "backend" / "datos" / "empleados.db"
 
 
 def _crear_empleado(
@@ -37,40 +31,23 @@ def _crear_empleado(
     return respuesta.json()
 
 
-def _insertar_empleado_baja(nombre: str, correo: str, puesto: str, departamento: str) -> dict:
-    """Inserta directamente en la base un empleado con estado 'baja'.
-
-    HU-02 solo expone lectura del directorio: la API no tiene (todavía) un
-    endpoint para dar de baja a un empleado. Para preparar esta precondición
-    se inserta el registro directo en la base SQLite que usa el backend.
-    """
-    if not RUTA_BASE_DATOS.exists():
-        pytest.skip(
-            f"No se encontró la base de datos del backend en {RUTA_BASE_DATOS}; "
-            "no se puede preparar un empleado con estado 'baja'."
-        )
-
-    numero_empleado = f"EMP-{9000 + (uuid.uuid4().int % 999):04d}"
-    hoy = date.today().isoformat()
-    ahora = datetime.utcnow().isoformat(sep=" ")
-
-    conexion = sqlite3.connect(RUTA_BASE_DATOS)
-    try:
-        cursor = conexion.execute(
-            """
-            INSERT INTO empleados
-                (numero_empleado, nombre, correo, puesto, departamento,
-                 fecha_ingreso, estado, fecha_baja, creado_en)
-            VALUES (?, ?, ?, ?, ?, ?, 'baja', ?, ?)
-            """,
-            (numero_empleado, nombre, correo, puesto, departamento, hoy, hoy, ahora),
-        )
-        conexion.commit()
-        id_empleado = cursor.lastrowid
-    finally:
-        conexion.close()
-
-    return {"id": id_empleado, "numero_empleado": numero_empleado, "nombre": nombre}
+def _crear_empleado_dado_de_baja(
+    url_api: str,
+    nombre: str,
+    correo: str,
+    puesto: str,
+    departamento: str,
+) -> dict:
+    """Crea un empleado vía la API y lo da de baja con POST /api/empleados/{id}/baja."""
+    empleado = _crear_empleado(
+        url_api, nombre=nombre, puesto=puesto, departamento=departamento, correo=correo
+    )
+    respuesta = httpx.post(
+        f"{url_api}/api/empleados/{empleado['id']}/baja",
+        json={"fecha_baja": "2024-06-15"},
+    )
+    assert respuesta.status_code == 200, respuesta.text
+    return respuesta.json()
 
 
 def test_cp02_ver_directorio_completo(page: Page, url_api: str, url_web: str) -> None:
@@ -162,12 +139,12 @@ def test_cp10_buscar_texto_sin_coincidencias(page: Page, url_api: str, url_web: 
     expect(page.get_by_test_id("tabla-empleados")).to_have_count(0)
 
 
-def test_cp12_empleado_baja_sigue_en_directorio(page: Page, url_web: str) -> None:
+def test_cp12_empleado_baja_sigue_en_directorio(page: Page, url_api: str, url_web: str) -> None:
     """CP-12: Un empleado dado de baja sigue apareciendo en el directorio."""
     etiqueta = uuid.uuid4().hex[:8]
     nombre = f"Sofía Díaz {etiqueta}"
     correo = f"sofia.diaz.{etiqueta}@empresa.com"
-    empleado = _insertar_empleado_baja(nombre, correo, puesto="Analista", departamento="Tecnología")
+    empleado = _crear_empleado_dado_de_baja(url_api, nombre, correo, puesto="Analista", departamento="Tecnología")
 
     page.goto(url_web)
     page.get_by_test_id("buscar-empleados").fill(etiqueta)

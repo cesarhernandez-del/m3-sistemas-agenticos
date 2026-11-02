@@ -21,14 +21,13 @@ depende del modelo es el del paso 3.
 Incluye los seis puntos de la guía de laboratorios y el punto adicional de la
 lámina de cierre.
 
-- [x] **Cada agente tiene una lista justificada de archivos y programas
-  permitidos.** `ESCRITURA` y `PROGRAMAS` en cada agente de Claude Code: el
-  desarrollador escribe `backend/*` y `frontend/*` y ejecuta npm y python; el
-  despliegue, solo Dockerfiles, compose y `nginx.conf`, con docker y curl; el
-  automatizador, solo `tests/*`, con python y pytest. Los agentes 1 y 2 están
-  limitados por las rutas de sus herramientas en `agentes/base.py`. La
-  justificación es la separación de permisos: quien prueba no puede cambiar el
-  código y quien despliega no puede tocar la app.
+- [x] **Cada agente tiene una lista justificada de archivos y programas permitidos.**
+  `ESCRITURA` y `PROGRAMAS` en cada agente de Claude Code: el desarrollador escribe
+  `backend/*` y `frontend/*` y ejecuta npm, npx, node, python, curl, sleep y kill (además
+  de cd, ls, cat y mkdir); el despliegue, solo Dockerfiles, compose y `nginx.conf`, con
+  docker, curl y sleep; el automatizador, solo `tests/*`, con python y pytest. Los agentes
+  1 y 2 están limitados por las rutas de sus herramientas en `agentes/base.py`. Matiz: la
+  lista del desarrollador incluye `kill` y `curl`, que no hacen falta para construir.
 - [~] **Ninguna acción irreversible ocurre sin aprobación humana.** El plan del
   desarrollador se aprueba con `interrupt` (`aprobar_plan`) antes de construir, y
   las preguntas abiertas pasan por `pedir_aclaracion`. Matiz: el despliegue con
@@ -52,9 +51,9 @@ lámina de cierre.
 - [~] **Los agentes no tienen acceso a internet ni a secretos.** `WebFetch` y
   `WebSearch` están deshabilitados; `confinar_lectura` impide leer `.env` y
   archivos de secretos; `comandos_permitidos` niega comandos que mencionen
-  secretos; el `.env` está fuera de Git. Matiz: el agente de despliegue tiene
-  permitido `curl`, que puede salir a internet. Se usa para revisar `localhost`,
-  pero el hook no restringe el destino.
+  secretos; el `.env` está fuera de Git.  Matiz: el desarrollador y el agente de 
+  despliegue tienen permitido `curl`, que puede salir a internet; el hook revisa el 
+  programa, no el destino.
 - [ ] **La suite de evaluación incluye al menos 3 casos de inyección.** No se
   cumple: solo existe HU-99. Faltarían, por ejemplo, una inyección en
   `contexto/` (ASI06) y otra en la salida de una herramienta, como un log de
