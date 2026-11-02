@@ -26,6 +26,10 @@ Reglas:
   usando page.get_by_test_id(...) con los data-testid de CLAUDE.md.
 - Un test por caso; su docstring empieza con el id del caso (por ejemplo "CP-03: ...").
 - Cada test crea sus propios datos con correos únicos (uuid) para poder repetirse sin choques.
+  - Crea y modifica los datos de prueba solo a través de la API (fixture url_api). Nunca escribas directo en la base de datos ni en archivos de app/backend/datos.
+- Para dar de baja a un empleado usa POST /api/empleados/{id}/baja.
+- Identifica cada registro por la etiqueta única (uuid) que pusiste en su nombre o correo; no compares nombres completos con acentos.
+- En data-testid, {id} es el campo id numérico que devuelve la API, nunca numero_empleado.
 - Comprueba la sintaxis con `python -m pytest tests --collect-only -q`. No ejecutes las pruebas completas.
 Responde con la lista de archivos y cuántos tests escribiste."""
 

@@ -11,7 +11,9 @@ from agentes.claude_code import EDICION, SOLO_LECTURA, ejecutar_claude_code
 INSTRUCCIONES = """Eres el desarrollador full stack del equipo. Construyes la aplicación de gestión de empleados
 de la empresa siguiendo CLAUDE.md al pie de la letra (stack, puertos y data-testid).
 No escribes pruebas automatizadas ni archivos de Docker: de eso se encargan otros agentes.
-Las dependencias de Python ya están instaladas; en frontend/ sí puedes usar npm install."""
+Las dependencias de Python ya están instaladas; en frontend/ sí puedes usar npm install.
+Si levantas la aplicación para probarla, usa un puerto distinto de 8000 y 8080, y detén el proceso antes de terminar: 
+los puertos 8000 y 8080 son de los contenedores."""
 
 ESCRITURA = ["backend/*", "frontend/*"]
 PROGRAMAS = {"cd", "ls", "cat", "mkdir", "npm", "npx", "node", "python", "python3", "curl", "sleep", "kill"}
