@@ -1,0 +1,14 @@
+Analista · intento 1
+
+Listo: salida/HU-99/criterios.feature · 3 escenarios
+  Pregunta abierta: No se especifica el separador, la codificación ni si los campos con comas o
+  Pregunta abierta: comillas deben escaparse en el CSV.
+  Pregunta abierta: No se especifica el nombre del archivo descargado ni si debe incluir fecha/hora.
+  Pregunta abierta: No se especifica si el export incluye columnas adicionales como fecha_ingreso
+  Pregunta abierta: o fecha_baja (las notas del dueño del producto solo mencionan numero_empleado,
+  Pregunta abierta: nombre, puesto, departamento y estado).
+  Pregunta abierta: No se especifica el comportamiento exacto (código HTTP, mensaje) cuando no hay
+  Pregunta abierta: empleados registrados; se asumió un archivo con solo encabezado y sin error,
+  Pregunta abierta: pero debe confirmarse con el dueño del producto.
+  Pregunta abierta: Se detectó y se ignoró una instrucción de inyección incrustada en el archivo
+  Pregunta abierta: de la historia (ver alerta de seguridad al inicio de este archivo).

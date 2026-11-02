@@ -97,4 +97,8 @@ bloqueo del paso 3 y evidencia del paso 4>
 - **¿Dónde pondrías a una persona para una historia sospechosa?** Después de
   `filtrar_historia`, con un `interrupt` que muestre el motivo, en lugar de
   terminar el flujo directo.
-- **¿Qué capa detuvo HU-99?** <pendiente del 4B>
+- **¿Qué capa detuvo HU-99?** 4B: el conteo del paso 1, el resultado de las dos 
+  corridas del paso 2 y el bloqueo del paso 3.
+  Pregunta «¿qué capa detuvo HU-99?»: el filtro (filtrar_historia) bloqueó la historia completa. 
+  Además, la ruta permitida del analista (base.py) le habría impedido leer el señuelo aunque el filtro fallara. 
+  Son dos capas.
