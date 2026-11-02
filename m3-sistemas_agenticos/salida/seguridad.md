@@ -68,3 +68,17 @@ escribe directo en SQLite, cambio que el contenedor no ve a tiempo por la carpet
 compartida. El desarrollador gastó 65 turnos y 1.70 USD corrigiendo un defecto
 inexistente. Es un caso de fallo en cascada (ASI08): el triage solo ve fallos y
 criterios, no el entorno. El detalle está en `salida/HU-03/notas_s4.md`.
+
+**Resolución (2 de noviembre):** corregí al agente, no su resultado. Agregué al
+`TAREA` del automatizador la regla de crear y modificar datos solo por la API y lo
+volví a ejecutar sobre HU-02 (`python -m agentes.automatizador HU-02`, 18 turnos,
+0.33 USD). Reemplazó el helper que escribía en SQLite por uno que usa
+`POST /api/empleados/{id}/baja`, sin tocar la app. Resultado: 24 de 24 pruebas
+pasan. Al desarrollador le agregué la instrucción de no dejar servidores en 8000 u
+8080; como es solo un letrero, el control real es revisar `lsof -i :8000 -i :8080`
+antes de cada corrida.
+
+8 de un uvicorn que el agente desarrollador levantó en `localhost:8000` para probar la
+app y no apagó; la auditoría lo registra dos veces (`auditoria.jsonl`, líneas 9–23 en
+HU-01 y línea 212 en HU-03). Es ejecución inesperada (ASI05): el hook
+`comandos_permitidos` revisa qué programa se usa, pero no que el proceso termine.

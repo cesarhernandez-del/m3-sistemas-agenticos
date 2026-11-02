@@ -52,10 +52,14 @@ alta mientras se edita (no lo pidió nadie).
    en ellas.
 2. Las pruebas buscaban los ids 163 y 164, pero la API del 8080 tenía como máximo
    el 149: los datos se estaban creando en otra base.
-3. `lsof -i :8000` mostró dos procesos: `ssh` (reenvío de Colima al contenedor) y
-   un `python` en `localhost:8000`, un uvicorn que quedó vivo tras `verificar`.
-   Las pruebas (`URL_API = http://localhost:8000`) le pegaban a ese backend local.
-   Al cerrarlo: **de 10 fallas a 2**, con todas las de HU-03 pasando.
+3. `lsof -i :8000` mostró dos procesos: `ssh` (reenvío de Colima al contenedor) y un
+   `python` en `localhost:8000`. La auditoría muestra que lo levantó el **desarrollador**:
+   `auditoria.jsonl` líneas 9–23 (Lab 2, HU-01, viernes 20:52) y línea 212 (4A, HU-03,
+   sábado 11:32), ambas con `uvicorn` en un comando Bash. No lo apagó al terminar. Las
+   pruebas (`URL_API = http://localhost:8000`) llegaban a ese backend local y no al
+   contenedor. Al cerrarlo, las fallas bajaron de 10 a 2 y todas las de HU-03 pasaron.
+   (Al principio sospeché de `verificar`, pero ese usa el puerto 8010 y siempre apaga su
+   servidor en un `finally`.)
 4. Las 2 restantes (`test_cp11` y `test_cp12`, «baja sigue en directorio», de
    HU-02) usan `_insertar_empleado_baja`, que escribe directo en SQLite porque en
    HU-02 no había endpoint de baja. Descarté con evidencia: otro archivo (es el
@@ -68,7 +72,7 @@ alta mientras se edita (no lo pidió nadie).
 
 | Fallas | Causa real | Responsable correcto | Qué dijo el triage |
 | --- | --- | --- | --- |
-| 8 | uvicorn local en `localhost:8000` interceptando las llamadas de las pruebas | La fábrica: `verificar` no apaga su servidor | Ciclo 2: automatizador ✗ |
+| 8 | uvicorn que el desarrollador levantó en `localhost:8000` y no apagó (auditoría, líneas 9–23 y 212) | El desarrollador; sus `PROGRAMAS` (python, sleep, kill) le permiten dejar procesos vivos | Ciclo 2: automatizador ✗ |
 | 2 | La prueba escribe directo en SQLite y el contenedor no lo ve a tiempo | Automatizador: la prueba depende del entorno en lugar de usar la API | Ciclo 1: desarrollador ✗ |
 
 **Conclusión:** ninguna de las 10 fallas era un defecto de la app. El triage no
