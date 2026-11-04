@@ -106,9 +106,10 @@ def ejecutar_agente(sistema: str, herramientas: list[Herramienta], tarea: str,
 
     for paso in range(1, max_pasos + 1):
         # Paso 3 · llamar al modelo con sistema, herramientas y mensajes
-        resp = cliente.messages.create(
-            model=os.environ["MODEL"], max_tokens=16000, system=sistema,
-            tools=[h.esquema() for h in herramientas], messages=mensajes)
+        # Streaming: permite respuestas largas (arriba de ~21 000 tokens el SDK lo exige)
+        with cliente.messages.stream(model=os.environ["MODEL"], max_tokens=32000, system=sistema,
+                                     tools=[h.esquema() for h in herramientas], messages=mensajes) as flujo:
+            resp = flujo.get_final_message()
 
         # Paso 4 · guardar lo que respondió
         mensajes.append({"role": "assistant", "content": resp.content})
