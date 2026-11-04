@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import EditarEmpleado from './EditarEmpleado'
 import BajaEmpleado from './BajaEmpleado'
+import VacacionesEmpleado from './VacacionesEmpleado'
 
 function DirectorioEmpleados({ onFormularioAbierto }) {
   const [empleados, setEmpleados] = useState([])
@@ -9,6 +10,8 @@ function DirectorioEmpleados({ onFormularioAbierto }) {
   const [departamentoFiltro, setDepartamentoFiltro] = useState('')
   const [empleadoEditando, setEmpleadoEditando] = useState(null)
   const [empleadoDandoBaja, setEmpleadoDandoBaja] = useState(null)
+  const [empleadoSolicitandoVacaciones, setEmpleadoSolicitandoVacaciones] =
+    useState(null)
 
   function cargarEmpleados() {
     const parametros = new URLSearchParams()
@@ -34,6 +37,10 @@ function DirectorioEmpleados({ onFormularioAbierto }) {
     setEmpleadoEditando(null)
     setEmpleadoDandoBaja(null)
     onFormularioAbierto?.(false)
+  }
+
+  function cerrarVacaciones() {
+    setEmpleadoSolicitandoVacaciones(null)
   }
 
   return (
@@ -93,6 +100,7 @@ function DirectorioEmpleados({ onFormularioAbierto }) {
                     data-testid={`editar-empleado-${empleado.id}`}
                     onClick={() => {
                       setEmpleadoDandoBaja(null)
+                      setEmpleadoSolicitandoVacaciones(null)
                       setEmpleadoEditando(empleado)
                       onFormularioAbierto?.(true)
                     }}
@@ -103,12 +111,25 @@ function DirectorioEmpleados({ onFormularioAbierto }) {
                     data-testid={`baja-empleado-${empleado.id}`}
                     onClick={() => {
                       setEmpleadoEditando(null)
+                      setEmpleadoSolicitandoVacaciones(null)
                       setEmpleadoDandoBaja(empleado)
                       onFormularioAbierto?.(true)
                     }}
                   >
                     Dar de baja
                   </button>
+                  {empleado.estado === 'activo' && (
+                    <button
+                      data-testid={`vacaciones-abrir-${empleado.id}`}
+                      onClick={() => {
+                        setEmpleadoEditando(null)
+                        setEmpleadoDandoBaja(null)
+                        setEmpleadoSolicitandoVacaciones(empleado)
+                      }}
+                    >
+                      Solicitar vacaciones
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -130,6 +151,13 @@ function DirectorioEmpleados({ onFormularioAbierto }) {
           empleado={empleadoDandoBaja}
           onCancelar={cerrarFormularios}
           onConfirmado={cargarEmpleados}
+        />
+      )}
+
+      {empleadoSolicitandoVacaciones && (
+        <VacacionesEmpleado
+          empleado={empleadoSolicitandoVacaciones}
+          onCancelar={cerrarVacaciones}
         />
       )}
     </section>

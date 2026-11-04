@@ -6,11 +6,13 @@ from fastapi.responses import JSONResponse
 
 from basedatos import Base, motor
 from rutas_empleados import router
+from rutas_vacaciones import router as router_vacaciones
 
 Base.metadata.create_all(bind=motor)
 
 app = FastAPI(title="Gestión de empleados")
 app.include_router(router)
+app.include_router(router_vacaciones)
 
 
 @app.exception_handler(RequestValidationError)
