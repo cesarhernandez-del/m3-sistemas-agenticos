@@ -15,11 +15,13 @@ Cómo trabajas:
 1. Lee la historia y el archivo contexto/reglas_negocio.md.
 2. Escribe {destino}. La primera línea es `# language: es` y usas las palabras clave
    Característica, Escenario, Dado, Cuando, Entonces, Y.
-3. Incluye el camino feliz y un escenario de error por cada regla de negocio que aplique a ESTA historia.
+3. Incluye el camino feliz y un escenario de error por cada regla de negocio que aplique a ESTA historia. Si el contexto trae una tabla de errores con mensajes exactos, escribe un escenario por cada fila y copia el código y el mensaje letra por letra.
 4. Cada escenario se puede verificar desde la pantalla o la API: datos concretos, nada de «funciona bien».
 5. No inventes reglas. Si falta información, agrégala al final como comentarios bajo `# Preguntas abiertas`.
 6. Responde al final con una sola línea: cuántos escenarios escribiste."""
 
+REF_CONTEXTO = re.compile(r"contexto/([\w.-]+\.md)")
+FILA_ERROR = re.compile(r"^\|[^|\n]*\|\s*\d{3}\s*\|\s*`([^`]+)`\s*\|\s*$", re.MULTILINE)
 
 def escenarios(gherkin: str) -> list[str]:
     return re.findall(r"^\s*Escenario:\s*(.+?)\s*$", gherkin, flags=re.MULTILINE)
@@ -30,6 +32,37 @@ def preguntas_abiertas(gherkin: str) -> list[str]:
         return []
     bloque = gherkin.split("# Preguntas abiertas", 1)[1]
     return [l.lstrip("# -").strip() for l in bloque.splitlines() if l.strip().lstrip("#").strip()]
+
+
+def mensajes_exactos(historia: Path) -> list[str]:
+    """Mensajes de error exactos que exige el contexto citado por la historia.
+
+    Lee los archivos de contexto/ que la historia menciona y extrae el texto entre
+    comillas invertidas de cada fila «| caso | código | `mensaje` |».
+
+    Ejemplo:
+        >>> mensajes_exactos(Path("historias/HU-10-solicitar-vacaciones.md"))[0]
+        'Empleado no encontrado'
+    """
+    mensajes = []
+    for nombre in sorted(set(REF_CONTEXTO.findall(historia.read_text(encoding="utf-8")))):
+        archivo = RAIZ / "contexto" / nombre
+        if archivo.exists():
+            mensajes += FILA_ERROR.findall(archivo.read_text(encoding="utf-8"))
+    return mensajes
+
+
+def faltan_mensajes(gherkin: str, mensajes: list[str]) -> list[str]:
+    """Un problema por cada mensaje exacto que no aparece letra por letra en el Gherkin.
+
+    Una «N» suelta dentro del mensaje es un número variable: acepta cualquier entero.
+    """
+    problemas = []
+    for mensaje in mensajes:
+        patron = r"\d+".join(re.escape(parte) for parte in re.split(r"\bN\b", mensaje))
+        if not re.search(patron, gherkin):
+            problemas.append(f'Falta un escenario con el mensaje exacto "{mensaje}".')
+    return problemas
 
 
 def validar_gherkin(texto: str) -> list[str]:
@@ -59,6 +92,8 @@ def generar_criterios(historia: Path, max_intentos: int = 2) -> Path:
         ejecutar_agente(SISTEMA.format(destino=rel(destino)), herramientas, tarea, nombre="analista")
         problemas = validar_gherkin(destino.read_text(encoding="utf-8")) if destino.exists() \
             else [f"No se escribió {rel(destino)}."]
+        if destino.exists():
+            problemas += faltan_mensajes(destino.read_text(encoding="utf-8"), mensajes_exactos(historia))
         if not problemas:
             return destino
         # Reflexión guiada por un evaluador determinista: el agente recibe los problemas y corrige

@@ -1,0 +1,100 @@
+Analista · intento 1
+
+--- PREGUNTAS ---
+['Ninguna: las reglas de negocio, los mensajes exactos y la API quedaron completos', 'en contexto/reglas_vacaciones.md y contexto/convenciones_vacaciones.md.']
+Hay preguntas abiertas. ¿Continuar de todos modos? (si/no): ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+Diseñador de pruebas · intento 1
+  [desarrollador-plan] trabajando en app/ con Claude Code...
+  [desarrollador-plan] terminó en 11 turnos · 0.16 USD
+
+--- PLAN ---
+Ya revisé el backend (`modelos.py`, `esquemas.py`, `rutas_empleados.py`, `basedatos.py`) y el frontend (`App.jsx`, `DirectorioEmpleados.jsx`, `EditarEmpleado.jsx`, `BajaEmpleado.jsx`). `fecha_ingreso` ya existe en `Empleado`, así que no hace falta migrarlo. Aquí está el plan:
+
+## Plan HU-10: Vacaciones
+
+**Backend — modelo** (`modelos.py`)
+- Nueva clase `Vacaciones(Base)`: `id` (PK), `empleado_id` (FK a `empleados.id`), `fecha_inicio`, `fecha_fin` (Date), `dias_habiles` (Integer). No se toca `Empleado`.
+
+**Backend — festivos y cálculo** (nuevo `vacaciones_util.py` o similar, para no inflar `rutas_empleados.py`)
+- Diccionario de festivos 2026/2027 (de `reglas_vacaciones.md`).
+- Función `dias_habiles(fecha_inicio, fecha_fin) -> int`: cuenta días excluyendo sáb/dom/festivos.
+- Función `cumple_antiguedad(fecha_ingreso, fecha_inicio) -> bool`: aniversario, con regla del 29 de feb.
+
+**Backend — esquemas** (`esquemas.py`)
+- `VacacionesCrear`: `fecha_inicio: date`, `fecha_fin: date`.
+- `VacacionesSalida`: `id, empleado_id, fecha_inicio, fecha_fin, dias_habiles, dias_restantes`.
+- `VacacionesSaldo`: `empleado_id, anio, dias_usados, dias_disponibles, solicitudes: list[...]`.
+
+**Backend — rutas** (`rutas_empleados.py`, mismo router `/api`)
+- `POST /empleados/{id}/vacaciones`: valida en el orden exacto de la tabla (existe → activo → fecha_fin≥inicio → mismo año → año en festivos → antigüedad → días hábiles>0 → cupo disponible); crea registro; responde 201 con `dias_restantes`.
+- `GET /empleados/{id}/vacaciones?anio=`: suma `dias_habiles` del año, calcula disponibles (12 - usados), lista solicitudes.
+- Mensajes de error exactos según `convenciones_vacaciones.md`.
+
+**Frontend**
+- Nuevo `Vacaciones.jsx`: formulario modal/inline por empleado — muestra `vacaciones-disponibles` (fetch al abrir), campos `vacaciones-fecha-inicio`/`vacaciones-fecha-fin`, botón `vacaciones-enviar`, resultado en `vacaciones-mensaje`.
+- `DirectorioEmpleados.jsx`: agregar botón `vacaciones-abrir-{id}` por fila de empleado **activo** (no se muestra si está de baja); estado `empleadoVacaciones` análogo a `empleadoEditando`/`empleadoDandoBaja`; renderiza `<Vacaciones>` condicionalmente, cerrando los otros formularios.
+
+¿Apruebo este plan para que lo implemente, o quieres ajustar algo (por ejemplo, dónde vive la lógica de festivos)?
+¿Aprobar el plan? Escribe 'si' o tus comentarios: ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  [desarrollador-plan] trabajando en app/ con Claude Code...
+  [desarrollador-plan] terminó en 10 turnos · 0.15 USD
+
+--- PLAN ---
+## Plan HU-10 — Solicitar vacaciones
+
+**Modelo de datos** (`backend/modelos.py`)
+- Nueva tabla `Vacaciones`: `id`, `empleado_id` (FK a `empleados.id`), `fecha_inicio: Date`, `fecha_fin: Date`, `dias_habiles: int`. `fecha_ingreso` ya existe en `Empleado`, no se toca.
+
+**Lógica de negocio** (nuevo `backend/vacaciones.py`, para no inflar `rutas_empleados.py`)
+- Tabla de festivos 2026/2027 como constante.
+- `contar_dias_habiles(inicio, fin)`: itera el rango, descarta sáb/dom/festivos.
+- `calcular_antiguedad_cumplida(fecha_ingreso, fecha_inicio)`: compara aniversario, con el caso 29-feb → 1-mar.
+- `dias_usados_en_anio(sesion, empleado_id, anio)`: suma `dias_habiles` de solicitudes de ese año.
+
+**Esquemas** (`backend/esquemas.py`)
+- `VacacionesCrear` (fecha_inicio, fecha_fin: `date`, formato inválido lo rechaza el 422 automático de FastAPI).
+- `VacacionesSalida`, `SaldoVacacionesSalida` (con lista de `solicitudes`).
+
+**Endpoints** (nuevo `backend/rutas_vacaciones.py`, incluido en `main.py`)
+- `POST /api/empleados/{id}/vacaciones`: valida en este orden exacto → empleado existe (404) → no está de baja (409) → fin ≥ inicio (400) → mismo año (400) → año en tabla de festivos (400) → antigüedad (400) → al menos 1 día hábil (400) → cupo disponible (400, mensaje con `N` y siempre "días hábiles"). Si pasa, inserta y responde 201 con `dias_restantes` recalculado.
+- `GET /api/empleados/{id}/vacaciones?anio=`: si falta `anio`, usa el año en curso; responde `dias_usados`, `dias_disponibles`, `solicitudes`.
+
+**Frontend**
+- `VacacionesEmpleado.jsx` (nuevo): formulario con `vacaciones-fecha-inicio`, `vacaciones-fecha-fin`, `vacaciones-enviar`, `vacaciones-disponibles` (GET al abrir), `vacaciones-mensaje` (éxito con el texto exacto o `detail` del error).
+- `DirectorioEmpleados.jsx`: botón `vacaciones-abrir-{id}` por fila solo si `estado === 'activo'`; al abrir cierra `empleadoEditando`/`empleadoDandoBaja` pero **no** llama `onFormularioAbierto(true)`, para que el formulario de alta y el directorio sigan visibles.
+
+¿Apruebas este plan para empezar a implementar?
+¿Aprobar el plan? Escribe 'si' o tus comentarios: ⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+  [desarrollador] trabajando en app/ con Claude Code...
+  [desarrollador] terminó en 32 turnos · 0.71 USD
+  [despliegue] trabajando en app/ con Claude Code...
+  [automatizador] trabajando en app/ con Claude Code...
+  [despliegue] terminó en 20 turnos · 0.22 USD
+  [automatizador] terminó en 20 turnos · 0.48 USD
+# Reporte · HU-10
+
+**Estado:** LISTA
+**Costo de agentes:** 1.72 USD
+**Ciclos de corrección:** 0
+
+## Bitácora
+- Filtro de historia: OK
+- Criterios escritos en criterios.feature
+- Preguntas abiertas: la persona respondió 'si'
+- Casos de prueba escritos en casos_prueba.json
+- Plan rechazado: Ajustes: los errores de reglas responden 400 y el empleado dado de baja 409; solo el formato de fecha inválido es el 422 automático de FastAPI. Los días hábiles se cuentan incluyendo la fecha de inicio y la de fin. El mensaje del tope dice siempre “días hábiles”, también cuando N es 1. El mensaje de éxito en vacaciones-mensaje es exactamente “Solicitud registrada: N días hábiles. Te quedan M días hábiles en AAAA.”. Si GET no recibe anio, usa el año en curso. Abrir vacaciones solo puede cerrar los formularios de editar y dar de baja; el formulario de alta y el directorio siguen visibles. No modifiques el comportamiento de HU-01 a HU-03.
+- Plan aprobado por una persona
+- Construcción 1
+- Verificación: OK
+- Pruebas automatizadas: OK (20 casos)
+- Despliegue: OK
+- Despliegue y pruebas listos
+- Pruebas E2E: 42 passed, 2 skipped, 1 warning in 5.13s
+
+## Última ejecución de pruebas
+```
+42 passed, 2 skipped, 1 warning in 5.13s
+
+```

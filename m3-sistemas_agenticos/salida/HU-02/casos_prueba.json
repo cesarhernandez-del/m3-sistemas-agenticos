@@ -1,0 +1,234 @@
+{
+  "historia": "HU-02",
+  "casos": [
+    {
+      "id": "CP-01",
+      "escenario": "Ver el directorio completo de empleados",
+      "nivel": "api",
+      "precondiciones": [
+        "Existen los empleados EMP-0001 (Ana Torres, Analista, Tecnología, activo) y EMP-0002 (Luis Pérez, Ejecutivo, Ventas, activo)"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados",
+        "Verificar código de respuesta",
+        "Verificar cantidad de elementos en la lista",
+        "Verificar que cada empleado tenga numero_empleado, nombre, puesto, departamento y estado"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista de 2 empleados, cada uno con numero_empleado, nombre, puesto, departamento y estado"
+    },
+    {
+      "id": "CP-02",
+      "escenario": "Ver el directorio completo de empleados",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existen los empleados EMP-0001 (Ana Torres, Analista, Tecnología, activo) y EMP-0002 (Luis Pérez, Ejecutivo, Ventas, activo)"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Verificar que el elemento con data-testid 'tabla-empleados' sea visible",
+        "Contar las filas con data-testid 'fila-empleado-{id}'",
+        "Verificar que la fila de EMP-0001 muestre numero-empleado-{id}, nombre, puesto, departamento y estado-empleado-{id}",
+        "Verificar que la fila de EMP-0002 muestre numero-empleado-{id}, nombre, puesto, departamento y estado-empleado-{id}"
+      ],
+      "datos": {
+        "empleado1": "EMP-0001",
+        "empleado2": "EMP-0002"
+      },
+      "resultado_esperado": "La tabla 'tabla-empleados' muestra 2 filas, con número de empleado, nombre, puesto, departamento y estado visibles en cada una"
+    },
+    {
+      "id": "CP-03",
+      "escenario": "Buscar por nombre sin distinguir mayúsculas de minúsculas",
+      "nivel": "api",
+      "precondiciones": [
+        "Existe el empleado EMP-0001 con nombre 'Ana Torres'"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados?buscar=ana torres",
+        "Verificar código de respuesta",
+        "Verificar que el resultado incluya al empleado EMP-0001"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados?buscar=ana torres",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista que incluye al empleado EMP-0001 con nombre 'Ana Torres'"
+    },
+    {
+      "id": "CP-04",
+      "escenario": "Buscar por nombre sin distinguir mayúsculas de minúsculas",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existe el empleado EMP-0001 con nombre 'Ana Torres'"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Escribir 'ana torres' en el campo con data-testid 'buscar-empleados'",
+        "Verificar que la fila con data-testid 'fila-empleado-{id}' correspondiente a EMP-0001 sea visible",
+        "Verificar que el nombre mostrado sea 'Ana Torres'"
+      ],
+      "datos": {
+        "texto_busqueda": "ana torres",
+        "empleado": "EMP-0001"
+      },
+      "resultado_esperado": "Se muestra en los resultados la fila del empleado EMP-0001 con nombre 'Ana Torres'"
+    },
+    {
+      "id": "CP-05",
+      "escenario": "Buscar por correo sin distinguir mayúsculas de minúsculas",
+      "nivel": "api",
+      "precondiciones": [
+        "Existe el empleado EMP-0002 con correo 'luis.perez@empresa.com'"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados?buscar=LUIS.PEREZ@EMPRESA.COM",
+        "Verificar código de respuesta",
+        "Verificar que el resultado incluya al empleado EMP-0002 con correo 'luis.perez@empresa.com'"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados?buscar=LUIS.PEREZ@EMPRESA.COM",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista que incluye al empleado EMP-0002 con correo 'luis.perez@empresa.com'"
+    },
+    {
+      "id": "CP-06",
+      "escenario": "Buscar por correo sin distinguir mayúsculas de minúsculas",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existe el empleado EMP-0002 con correo 'luis.perez@empresa.com'"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Escribir 'LUIS.PEREZ@EMPRESA.COM' en el campo con data-testid 'buscar-empleados'",
+        "Verificar que la fila con data-testid 'fila-empleado-{id}' correspondiente a EMP-0002 sea visible",
+        "Verificar que el correo mostrado sea 'luis.perez@empresa.com'"
+      ],
+      "datos": {
+        "texto_busqueda": "LUIS.PEREZ@EMPRESA.COM",
+        "empleado": "EMP-0002"
+      },
+      "resultado_esperado": "Se muestra en los resultados la fila del empleado EMP-0002 con correo 'luis.perez@empresa.com'"
+    },
+    {
+      "id": "CP-07",
+      "escenario": "Filtrar empleados por departamento",
+      "nivel": "api",
+      "precondiciones": [
+        "Existen los empleados EMP-0001 (Tecnología), EMP-0002 (Ventas) y EMP-0003 (Tecnología)"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados?departamento=Tecnología",
+        "Verificar código de respuesta",
+        "Verificar cantidad de elementos en la lista",
+        "Verificar que todos los empleados tengan departamento 'Tecnología'"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados?departamento=Tecnología",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista de 2 empleados, todos con departamento 'Tecnología'"
+    },
+    {
+      "id": "CP-08",
+      "escenario": "Filtrar empleados por departamento",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existen los empleados EMP-0001 (Tecnología), EMP-0002 (Ventas) y EMP-0003 (Tecnología)"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Seleccionar 'Tecnología' en el selector con data-testid 'filtro-departamento'",
+        "Contar las filas con data-testid 'fila-empleado-{id}'",
+        "Verificar que el departamento mostrado en cada fila sea 'Tecnología'"
+      ],
+      "datos": {
+        "departamento": "Tecnología"
+      },
+      "resultado_esperado": "La tabla 'tabla-empleados' muestra 2 filas y todas tienen departamento 'Tecnología'"
+    },
+    {
+      "id": "CP-09",
+      "escenario": "Buscar un texto que no coincide con ningún empleado",
+      "nivel": "api",
+      "precondiciones": [
+        "Existe el empleado EMP-0001 con nombre 'Ana Torres'"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados?buscar=Carlos Gómez",
+        "Verificar código de respuesta",
+        "Verificar que la lista devuelta esté vacía"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados?buscar=Carlos Gómez",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista vacía"
+    },
+    {
+      "id": "CP-10",
+      "escenario": "Buscar un texto que no coincide con ningún empleado",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existe el empleado EMP-0001 con nombre 'Ana Torres'"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Escribir 'Carlos Gómez' en el campo con data-testid 'buscar-empleados'",
+        "Verificar que el elemento con data-testid 'sin-resultados' sea visible y muestre el texto 'No se encontraron resultados'",
+        "Verificar que la tabla con data-testid 'tabla-empleados' no tenga filas"
+      ],
+      "datos": {
+        "texto_busqueda": "Carlos Gómez"
+      },
+      "resultado_esperado": "Se muestra el mensaje 'No se encontraron resultados' en 'sin-resultados' y la lista de resultados está vacía"
+    },
+    {
+      "id": "CP-11",
+      "escenario": "Un empleado dado de baja sigue apareciendo en el directorio",
+      "nivel": "api",
+      "precondiciones": [
+        "Existe el empleado EMP-0004 con nombre 'Sofía Díaz' y estado 'baja'"
+      ],
+      "pasos": [
+        "Enviar GET /api/empleados",
+        "Verificar código de respuesta",
+        "Verificar que el resultado incluya al empleado EMP-0004 con estado 'baja'"
+      ],
+      "datos": {
+        "metodo": "GET",
+        "url": "/api/empleados",
+        "codigo_esperado": "200"
+      },
+      "resultado_esperado": "La API responde 200 con una lista que incluye al empleado EMP-0004 con nombre 'Sofía Díaz' y estado 'baja'"
+    },
+    {
+      "id": "CP-12",
+      "escenario": "Un empleado dado de baja sigue apareciendo en el directorio",
+      "nivel": "e2e",
+      "precondiciones": [
+        "Existe el empleado EMP-0004 con nombre 'Sofía Díaz' y estado 'baja'"
+      ],
+      "pasos": [
+        "Abrir la pantalla del directorio de empleados",
+        "Verificar que la fila con data-testid 'fila-empleado-{id}' correspondiente a EMP-0004 sea visible",
+        "Verificar que el nombre mostrado sea 'Sofía Díaz'",
+        "Verificar que el elemento con data-testid 'estado-empleado-{id}' muestre el texto 'Baja'"
+      ],
+      "datos": {
+        "empleado": "EMP-0004",
+        "estado_esperado": "Baja"
+      },
+      "resultado_esperado": "El empleado EMP-0004 aparece en el directorio con nombre 'Sofía Díaz' y estado 'Baja'"
+    }
+  ]
+}

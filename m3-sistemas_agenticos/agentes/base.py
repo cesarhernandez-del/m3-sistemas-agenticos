@@ -97,31 +97,48 @@ def herramientas_archivos(lectura: list[Path], escritura: Path) -> list[Herramie
 def ejecutar_agente(sistema: str, herramientas: list[Herramienta], tarea: str,
                     max_pasos: int = 10, nombre: str = "agente") -> str:
     """Llama al modelo, ejecuta las herramientas que pida y repite hasta que responda sin pedir más."""
+        # Paso 1 · cliente y registro de herramientas por nombre
     cliente = Anthropic()
     registro = {h.nombre: h for h in herramientas}
+
+    # Paso 2 · la conversación empieza con la tarea
     mensajes = [{"role": "user", "content": tarea}]
-    for paso in range(max_pasos):
-        resp = cliente.messages.create(model=os.environ["MODEL"], max_tokens=16000, system=sistema,
-                                       tools=[h.esquema() for h in herramientas], messages=mensajes)
+
+    for paso in range(1, max_pasos + 1):
+        # Paso 3 · llamar al modelo con sistema, herramientas y mensajes
+        # Streaming: permite respuestas largas (arriba de ~21 000 tokens el SDK lo exige)
+        with cliente.messages.stream(model=os.environ["MODEL"], max_tokens=32000, system=sistema,
+                                     tools=[h.esquema() for h in herramientas], messages=mensajes) as flujo:
+            resp = flujo.get_final_message()
+
+        # Paso 4 · guardar lo que respondió
         mensajes.append({"role": "assistant", "content": resp.content})
-        print(f"  [{nombre}] stop_reason={resp.stop_reason} · bloques={[b.type for b in resp.content]}")   # ← diagnóstico
-        if resp.stop_reason == "max_tokens":   # el corte no pasa en silencio
-            raise RuntimeError(f"{nombre}: la respuesta se cortó por max_tokens; súbelo o pide una salida más corta")
+
+        # (protección) un corte por tokens no es un final
+        if resp.stop_reason == "max_tokens":
+            raise RuntimeError(f"{nombre}: respuesta cortada por max_tokens")
+
+        # Paso 5 · si no pidió herramientas, terminó
         if resp.stop_reason != "tool_use":
-            texto = "".join(b.text for b in resp.content if b.type == "text")
-            print(f"  [{nombre}] respondió sin herramientas:\n{texto[:800]}")                              # ← diagnóstico
-            return texto
+            return "".join(b.text for b in resp.content if b.type == "text")
+
+        # Paso 6 · ejecutar cada herramienta que pidió
         resultados = []
-        for bloque in resp.content:
-            if bloque.type != "tool_use":
+        for b in resp.content:
+            if b.type != "tool_use":
                 continue
-            print(f"  [{nombre} · paso {paso}] {bloque.name}({', '.join(bloque.input)})")
             try:
-                salida, error = registro[bloque.name].funcion(**bloque.input), False
-            except Exception as e:  # el error regresa al modelo como texto para que se corrija
-                salida, error = f"Error: {e}", True
-            resultados.append({"type": "tool_result", "tool_use_id": bloque.id,
-                               "content": salida, "is_error": error})
+                salida = registro[b.name].funcion(**b.input)
+                resultados.append({"type": "tool_result", "tool_use_id": b.id,
+                                   "content": str(salida)})
+            except Exception as e:
+                resultados.append({"type": "tool_result", "tool_use_id": b.id,
+                                   "content": f"{type(e).__name__}: {e}",
+                                   "is_error": True})
+
+        # Paso 7 · todos los resultados juntos, en UN mensaje de usuario
         mensajes.append({"role": "user", "content": resultados})
+
+    # Paso 8 · se acabaron las vueltas
     raise RuntimeError(f"{nombre}: se alcanzó el límite de {max_pasos} pasos")
     

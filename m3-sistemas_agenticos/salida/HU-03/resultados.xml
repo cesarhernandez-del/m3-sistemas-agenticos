@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="24" time="52.565" timestamp="2026-10-31T11:42:34.825895-06:00" hostname="MacBook-Air-de-Jefe.local"><testcase classname="tests.api.test_hu_02" name="test_cp01_ver_directorio_completo" time="0.036" /><testcase classname="tests.api.test_hu_02" name="test_cp03_buscar_por_nombre_sin_distinguir_mayusculas" time="0.012" /><testcase classname="tests.api.test_hu_02" name="test_cp05_buscar_por_correo_sin_distinguir_mayusculas" time="0.011" /><testcase classname="tests.api.test_hu_02" name="test_cp07_filtrar_por_departamento" time="0.021" /><testcase classname="tests.api.test_hu_02" name="test_cp09_buscar_texto_sin_coincidencias" time="0.014" /><testcase classname="tests.api.test_hu_02" name="test_cp11_empleado_baja_sigue_en_directorio" time="0.006" /><testcase classname="tests.api.test_hu_03" name="test_cp01_editar_puesto_y_departamento_empleado_activo" time="0.016" /><testcase classname="tests.api.test_hu_03" name="test_cp03_error_editar_departamento_fuera_de_catalogo" time="0.010" /><testcase classname="tests.api.test_hu_03" name="test_cp05_error_editar_puesto_demasiado_corto" time="0.010" /><testcase classname="tests.api.test_hu_03" name="test_cp07_error_editar_empleado_dado_de_baja" time="0.017" /><testcase classname="tests.api.test_hu_03" name="test_cp09_dar_de_baja_empleado_activo" time="0.019" /><testcase classname="tests.api.test_hu_03" name="test_cp11_error_dar_de_baja_fecha_anterior_a_ingreso" time="0.010" /><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp02_ver_directorio_completo[chromium]" time="0.827" /><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp04_buscar_por_nombre_sin_distinguir_mayusculas[chromium]" time="5.110"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-120&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-120&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_02_e2e.py:115: in test_cp04_buscar_por_nombre_sin_distinguir_mayusculas
+    expect(fila).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-120") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-120")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": ana torres 73d17f8f
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp06_buscar_por_correo_sin_distinguir_mayusculas[chromium]" time="5.103"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-121&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-121&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_02_e2e.py:129: in test_cp06_buscar_por_correo_sin_distinguir_mayusculas
+    expect(fila).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-121") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-121")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": LUIS.PEREZ.396054D629@EMPRESA.COM
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp08_filtrar_por_departamento[chromium]" time="5.141"><failure message="AssertionError: Locator expected to have count '2'&#10;Actual value: 0 &#10;Call log:&#10;  - Expect &quot;to_have_count&quot; locator(&quot;[data-testid^=\&quot;fila-empleado-\&quot;]&quot;) with timeout 5000ms&#10;  - waiting for locator(&quot;[data-testid^=\&quot;fila-empleado-\&quot;]&quot;)&#10;    14 × locator resolved to 0 elements&#10;       - unexpected value &quot;0&quot;">tests/e2e/test_hu_02_e2e.py:145: in test_cp08_filtrar_por_departamento
+    expect(filas).to_have_count(2)
+E   AssertionError: Locator expected to have count '2'
+E   Actual value: 0 
+E   Call log:
+E     - Expect "to_have_count" locator("[data-testid^=\"fila-empleado-\"]") with timeout 5000ms
+E     - waiting for locator("[data-testid^=\"fila-empleado-\"]")
+E       14 × locator resolved to 0 elements
+E          - unexpected value "0"</failure></testcase><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp10_buscar_texto_sin_coincidencias[chromium]" time="0.155" /><testcase classname="tests.e2e.test_hu_02_e2e" name="test_cp12_empleado_baja_sigue_en_directorio[chromium]" time="5.100"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-126&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-126&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_02_e2e.py:176: in test_cp12_empleado_baja_sigue_en_directorio
+    expect(fila).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-126") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-126")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": f314078f
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp02_editar_puesto_y_departamento_empleado_activo[chromium]" time="5.116"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-127&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-127&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:57: in test_cp02_editar_puesto_y_departamento_empleado_activo
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-127") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-127")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.576b0c1da8@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp04_error_editar_departamento_fuera_de_catalogo[chromium]" time="5.122"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-128&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-128&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:84: in test_cp04_error_editar_departamento_fuera_de_catalogo
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-128") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-128")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.4fc405a478@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp06_error_editar_puesto_demasiado_corto[chromium]" time="5.116"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-129&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-129&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:107: in test_cp06_error_editar_puesto_demasiado_corto
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-129") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-129")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.e77a02a5cc@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp08_error_editar_empleado_dado_de_baja[chromium]" time="5.131"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-130&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-130&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:122: in test_cp08_error_editar_empleado_dado_de_baja
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-130") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-130")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.916876f9a4@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp10_dar_de_baja_empleado_activo[chromium]" time="5.116"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-131&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-131&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:138: in test_cp10_dar_de_baja_empleado_activo
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-131") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-131")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.4763c01789@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase><testcase classname="tests.e2e.test_hu_03_e2e" name="test_cp12_error_dar_de_baja_fecha_anterior_a_ingreso[chromium]" time="5.164"><failure message="AssertionError: Locator expected to be visible&#10;Actual value: None&#10;Error: element(s) not found &#10;Call log:&#10;  - Expect &quot;to_be_visible&quot; get_by_test_id(&quot;fila-empleado-132&quot;) with timeout 5000ms&#10;  - waiting for get_by_test_id(&quot;fila-empleado-132&quot;)&#10;&#10;Aria snapshot:&#10;- heading &quot;Registrar empleado&quot; [level=1]&#10;- text: Nombre&#10;- textbox &quot;Nombre&quot;&#10;- text: Correo&#10;- textbox &quot;Correo&quot;&#10;- text: Puesto&#10;- textbox &quot;Puesto&quot;&#10;- text: Departamento&#10;- combobox &quot;Departamento&quot;:&#10;  - option &quot;Selecciona un departamento&quot; [selected]&#10;[+18 more lines; full report in element text]">tests/e2e/test_hu_03_e2e.py:154: in test_cp12_error_dar_de_baja_fecha_anterior_a_ingreso
+    _ir_a_empleado(page, url_web, empleado)
+tests/e2e/test_hu_03_e2e.py:49: in _ir_a_empleado
+    expect(page.get_by_test_id(f"fila-empleado-{empleado['id']}")).to_be_visible()
+E   AssertionError: Locator expected to be visible
+E   Actual value: None
+E   Error: element(s) not found 
+E   Call log:
+E     - Expect "to_be_visible" get_by_test_id("fila-empleado-132") with timeout 5000ms
+E     - waiting for get_by_test_id("fila-empleado-132")
+E   
+E   Aria snapshot:
+E   - heading "Registrar empleado" [level=1]
+E   - text: Nombre
+E   - textbox "Nombre"
+E   - text: Correo
+E   - textbox "Correo"
+E   - text: Puesto
+E   - textbox "Puesto"
+E   - text: Departamento
+E   - combobox "Departamento":
+E     - option "Selecciona un departamento" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - text: Fecha de ingreso
+E   - textbox "Fecha de ingreso"
+E   - button "Guardar"
+E   - heading "Directorio de empleados" [level=1]
+E   - textbox "Buscar por nombre o correo": empleado.a67812c35d@empresa.com
+E   - combobox:
+E     - option "Todos" [selected]
+E     - option "Tecnología"
+E     - option "Ventas"
+E     - option "Finanzas"
+E     - option "Recursos Humanos"
+E     - option "Operaciones"
+E   - paragraph: No se encontraron resultados</failure></testcase></testsuite></testsuites>
